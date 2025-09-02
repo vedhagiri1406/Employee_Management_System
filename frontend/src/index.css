@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ensure full-height so centering works */
+@layer base {
+  html, body, #root { height: 100%; }
+}
