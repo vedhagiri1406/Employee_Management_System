@@ -1,99 +1,81 @@
-// src/pages/Login.jsx
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { baseURL } from "../api/api";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import "../App.css";
 
 export default function Login() {
-  const [username, setUsername] = useState(""); // backend expects username
+  const nav = useNavigate();
+  const { search } = useLocation();
+  const verified = useMemo(() => new URLSearchParams(search).get("verified"), [search]);
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 👇 prevent vertical scrollbar while on the login page
+  useEffect(() => {
+    document.body.classList.add("auth-no-scroll");
+    return () => document.body.classList.remove("auth-no-scroll");
+  }, []);
 
   async function submit(e) {
     e.preventDefault();
-    setError("");
+    setErr("");
     setLoading(true);
-
     try {
-      const { data } = await axios.post(`${baseURL}/auth/login/`, {
-        username,
-        password,
-      });
-
-      // store tokens
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-
-      // redirect
-      window.location.href = "/";
-    } catch {
-      setError("Invalid username or password");
+      const { data } = await axios.post(`${baseURL}/auth/login-email/`, { email, password });
+      sessionStorage.setItem("access", data.access);
+      sessionStorage.setItem("refresh", data.refresh);
+      nav("/forms", { replace: true });
+    } catch (e) {
+      const msg =
+        e?.response?.data?.detail ||
+        e?.response?.data?.email ||
+        "Invalid email or password";
+      setErr(String(msg));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-  <main className="min-h-svh grid place-items-center bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 px-4">
-    <div className="w-full max-w-md">
-      <div className="rounded-lg shadow-xl bg-white p-8">
-        {/* Header */}
-        <h1 className="text-xl font-bold text-center mb-6">
-          Welcome to Employment Management System
-        </h1>
-        <h2 className="text-lg font-semibold text-center mb-6">Login</h2>
-
-        {error && (
-          <div className="mb-4 rounded-md border border-red-300 bg-red-50 text-red-700 px-3 py-2 text-sm text-center">
-            {error}
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={submit} className="space-y-4">
+    <div className="auth-wrap">
+      <h1>Employee Management System</h1>
+      <div className="auth-card">
+        <h2>Login</h2>
+        {verified === "1" && <div className="success">Email verified. Please log in.</div>}
+        {verified === "0" && <div className="error">Verification failed or link expired.</div>}
+        {err && <div className="error">{err}</div>}
+        <form onSubmit={submit} className="form">
+          Email
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Email or Username"
-            className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
             required
+            disabled={loading}
           />
+          Password
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            value={password}
+            onChange={(e)=>setPassword(e.target.value)}
             required
-          />
-          <button
-            type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-indigo-600 text-white font-medium py-2 hover:bg-indigo-700 transition disabled:opacity-60"
-          >
+          />
+          <button className="btn primary" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        {/* Links */}
-        <div className="mt-6 text-center space-y-2">
-          <p className="text-sm">
-            Not registered?{" "}
-            <a href="/register" className="text-indigo-600 hover:underline font-medium">
-              Register now
-            </a>
-          </p>
-          <p className="text-sm">
-            Forgot your password?{" "}
-            <a href="/change-password" className="text-indigo-600 hover:underline font-medium">
-              Change password
-            </a>
-          </p>
+        <div className="auth-links">
+          <Link to="/register">Register</Link>
+          <Link to="/forgot-password">Forgot Password</Link>
         </div>
       </div>
     </div>
-  </main>
-);
-
+  );
 }

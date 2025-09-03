@@ -126,3 +126,20 @@ CORS_ALLOW_ALL_ORIGINS=True
 # ── Basic security toggles for dev (harden in prod) ───────────────────────────
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = "DENY"
+
+
+
+
+
+# --- Email / URLs ---
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() == "true"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+
+# Location of your front & back apps
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+SITE_URL = os.environ.get("SITE_URL", "http://localhost:8000")  # backend base URL
