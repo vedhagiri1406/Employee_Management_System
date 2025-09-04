@@ -103,21 +103,6 @@ export default function FormDesign() {
     setFields([]);
   }
 
-  async function duplicateTemplate() {
-    if (!tplId) return;
-    try {
-      const copy = {
-        name: `${tplName} (Copy)`,
-        fields: fields.map((f, i) => ({ ...f, order: i })),
-      };
-      const { data } = await api.post("/forms/", copy);
-      await refreshTemplates(false);
-      selectTemplate(data);
-    } catch (e) {
-      setErr(extractAxiosMessage(e, "Failed to duplicate template."));
-    }
-  }
-
   async function deleteTemplate() {
     if (!tplId) return;
     const ok = typeof window !== "undefined"
@@ -267,9 +252,6 @@ export default function FormDesign() {
             </select>
             <button className="btn" onClick={newTemplate}>
               New
-            </button>
-            <button className="btn" onClick={duplicateTemplate} disabled={!tplId}>
-              Duplicate
             </button>
             <button
               className="btn danger"

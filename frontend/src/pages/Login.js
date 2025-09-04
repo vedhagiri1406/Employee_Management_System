@@ -14,7 +14,7 @@ export default function Login() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 👇 prevent vertical scrollbar while on the login page
+  // Prevent vertical scroll while on the auth page
   useEffect(() => {
     document.body.classList.add("auth-no-scroll");
     return () => document.body.classList.remove("auth-no-scroll");
@@ -41,39 +41,57 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-wrap">
-      <h1>Employee Management System</h1>
-      <div className="auth-card">
-        <h2>Login</h2>
+    <div className="auth-page">
+      <div className="auth-card login-card">
+        <div className="auth-header">
+          <h1 className="auth-title">Employee Management</h1>
+          <p className="auth-sub">Sign in with your email</p>
+        </div>
+
         {verified === "1" && <div className="success">Email verified. Please log in.</div>}
         {verified === "0" && <div className="error">Verification failed or link expired.</div>}
-        {err && <div className="error">{err}</div>}
-        <form onSubmit={submit} className="form">
-          Email
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            required
-            disabled={loading}
-          />
-          Password
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            required
-            disabled={loading}
-          />
-          <button className="btn primary" disabled={loading}>
+        {err && <div className="error" aria-live="polite">{err}</div>}
+
+        <form onSubmit={submit} className="form auth-form">
+          <label className="field">
+            <span className="field-label">Email</span>
+            <input
+              className="input"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+              required
+              disabled={loading}
+              autoComplete="email"
+            />
+          </label>
+
+          <label className="field">
+            <span className="field-label">Password</span>
+            <input
+              className="input"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              required
+              disabled={loading}
+              autoComplete="current-password"
+            />
+          </label>
+
+          <button className="btn primary block" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <div className="auth-links">
-          <Link to="/register">Register</Link>
-          <Link to="/forgot-password">Forgot Password</Link>
+
+        <div className="divider" role="separator" />
+
+        <div className="auth-links center">
+          <Link to="/register">Create account</Link>
+          <span className="dot">•</span>
+          <Link to="/forgot-password">Forgot password</Link>
         </div>
       </div>
     </div>

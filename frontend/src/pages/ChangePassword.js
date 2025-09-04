@@ -27,12 +27,13 @@ export default function ChangePassword() {
 
   return (
     <div className="page-wrap">
-      <div className="card">
+      <div className="card" style={{maxWidth: 520, marginInline: "auto"}}>
         <h2>Change Password</h2>
         {msg && <div className="success">{msg}</div>}
         {err && <div className="error">{err}</div>}
         <form onSubmit={submit} className="form">
           <input
+            className="input"
             type="password"
             placeholder="Old Password"
             value={f.old_password}
@@ -41,6 +42,7 @@ export default function ChangePassword() {
             disabled={loading}
           />
           <input
+            className="input"
             type="password"
             placeholder="New Password"
             value={f.new_password}
